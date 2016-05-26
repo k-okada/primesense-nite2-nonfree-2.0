@@ -1,0 +1,72 @@
+#!/bin/bash -e
+set -x
+
+test -n "$1" || (echo "`basename $0` <tarbz2>" ; exit 1)
+test -f "$1" || (echo "`basename $0` <tarbz2>" ; exit 1)
+
+ZIPBALL="$1"
+TARBALL=`unzip -lqq $ZIPBALL | awk '{print $4}'`
+BASE=`unzip -p $ZIPBALL | tar tvj |  head -1 | awk '{print $6}'`
+ORIG_BASE="openni-modules-primesense-nite2-nonfree.orig"
+DEB_BASE="openni-modules-primesense-nite2-nonfree"
+TMPDIR="/tmp/primesense-nite2.$$"
+CACHEDIR="/var/cache/primesense-nite2-nonfree"
+
+function add_niReg()
+{
+	TAG="#ADDREGISTRATION#"
+	SRC="debian/postinst"
+	DEST="`tempfile`"
+
+	sed "s%${TAG}%niReg -r $1 $2\\n\t${TAG}%g" < ${SRC} > ${DEST}
+	mv -f ${DEST} ${SRC}
+}
+
+function rm_niReg()
+{
+	TAG="#RMREGISTRATION#"
+	SRC="debian/prerm"
+	DEST="`tempfile`"
+
+	sed "s%${TAG}%niReg -u $1 $2\\n\t${TAG}%g" < ${SRC} > ${DEST}
+	mv -f ${DEST} ${SRC}
+}
+
+CURDIR="`pwd`"
+mkdir ${TMPDIR}
+pushd ${TMPDIR}
+
+# Rename the content of the passed tarball in a Debian compliant way
+unzip -qq $ZIPBALL > /dev/null || (echo cannot unzip original package ; exit 1)
+tar xjf ${TARBALL} > /dev/null || (echo cannot untarbz2 original package ; exit 1)
+mv ${BASE} ${ORIG_BASE}
+cp -a ${ORIG_BASE} ${DEB_BASE}
+cp -a /usr/share/primesense-nite2-nonfree/nite2_debian_dir ${DEB_BASE}/debian
+
+unset BASE
+
+pushd ${DEB_BASE}
+
+debuild --no-lintian -uc -us
+
+echo Copying .deb into ${CACHEDIR}.
+echo you can install the created package, as root with:
+echo
+echo -n "sudo dpkg -i "
+for deb in ../*.deb; do
+	cp ${deb} ${CACHEDIR}
+	echo -n "${CACHEDIR}/`basename ${deb}`"
+done
+echo
+
+popd > /dev/null # out of DEB_BASE
+popd > /dev/null # out of TMPDIR
+
+
+# clean up
+if [ "$CLEAN" != "no" ];
+then
+	echo "Package tree can be found at $TMPDIR"
+else
+	test -d "${TMPDIR}" && rm -rf "${TMPDIR}"
+fi

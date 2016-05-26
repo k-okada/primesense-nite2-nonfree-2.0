@@ -1,0 +1,40 @@
+Source: primesense-nite2-nonfree
+Section: contrib/devel
+Priority: optional
+Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
+Uploaders: Cosimo Alfarano <kalfa@debian.org>,
+           Hans-Christoph Steiner <hans@eds.org>,
+           Nobuhiro Iwamatsu <iwamatsu@debian.org>
+Build-Depends: debhelper (>= 5), cdbs
+Standards-Version: 3.9.4
+Homepage: http://wiki.debian.org/PrimeSenseNite
+Vcs-Git: git://git.debian.org/pkg-multimedia/primesense-nite2-nonfree.git
+Vcs-Browser: http://git.debian.org/?p=pkg-multimedia/primesense-nite2-nonfree.git
+
+Package: primesense-nite2-nonfree
+Architecture: i386 amd64
+Depends: debconf | debconf-2.0,
+         dpkg-dev,
+         devscripts,
+         wget,
+         unzip,
+         gnupg,
+         libopenni2-dev,
+         openni2-utils,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Suggests: osceleton
+Description: OpenNI module providing gesture and skeleton tracking
+ This package will download the binary PrimeSense NITE modules for OpenNI and
+ creates a Debian packages you can install.  These modules provide two types
+ of tracking to OpenNI: 'Control By Gesture' and 'Games for All'.  'Control By
+ Gesture' is gesture tracking for using arm movements for navigating menus, it
+ provides gesture tracking for things like push, click, circle, and
+ wave. 'Games for All' is skeleton tracking for getting information on the
+ position of all of the joints of the body.  These two tracking modes are the
+ most common kinds of tracking used with the Microsoft Kinect camera.
+ .
+ WARNING: Installing this Debian package causes the
+ PrimeSense NITE modules to be downloaded from www.primesense.com
+ The End User License Agreement of NITE modules 
+ is available at www.primesense.com.

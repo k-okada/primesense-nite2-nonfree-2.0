@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$1" = "configure" ]; then
+	#ADDREGISTRATION#
+    # taken from the install.sh script included in the upstream binary tarball
+    niLicense PrimeSense 0KOIk2JeIBYClPWVnMoRKn5cdY4=
+fi
+
+#DEBHELPER#

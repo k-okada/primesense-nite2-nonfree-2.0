@@ -1,0 +1,58 @@
+.TH UPDATE-PRIMESENSE-NITE-NONFREE 8 "May 20, 2011"
+
+.SH NAME
+update-primesense-nite-nonfree \- program to get the newest PrimeSense NITE module
+
+.SH SYNOPSIS
+.B update-primesense-nite-nonfree
+.RI --install
+.br
+.B update-primesense-nite-nonfree
+.RI --uninstall
+
+.SH DESCRIPTION
+The program
+.B update-primesense-nite-nonfree
+takes care of
+downloading last minute information from Debian about suitable versions,
+removing the installed PrimeSense NITE module if it has been reported as insecure,
+or, if a newer suitable version is available,
+downloading a newer PrimeSense NITE modules and its installer from the PrimeSense download site,
+create a debian package from the downloaded package on the local system so that
+the installation of the package will comply with the DFSG.
+This won't install the generated package if the package is not installed yet,
+but will upgrade the package if the user has already a version installed.
+.PP
+A copy of the downloaded .tar.gz is saved in /var/cache/primesense-nite-nonfree for later reuse.
+.PP
+The program
+.B update-primesense-nite-nonfree
+is used in the
+.B postinst
+and
+.B prerm
+scripts of the primesense-nite-nonfrewe Debian package,
+but this program can also be run manually by root.
+
+.SH OPTIONS
+.TP
+.B \-\-install
+To install, update or remove PrimeSense NITE modules
+depending on downloaded last minute information from Debian about suitable versions.
+.TP
+.B \-\-uninstall
+To remove PrimeSense NITE
+.TP
+.B \-\-verbose
+Produce detailed information about what's happening.
+.TP
+.B \-\-quiet
+Produce no informational output.
+
+.SH SEE ALSO
+.TP
+.B http://wiki.debian.org/PrimeSenseNite
+If you subscribe to this wiki page, then you will receive updates via e-mail.
+.TP
+.B http://www.primesense.com/
+The PrimeSense homepage.

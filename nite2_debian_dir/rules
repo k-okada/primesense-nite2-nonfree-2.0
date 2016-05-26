@@ -1,0 +1,56 @@
+#!/usr/bin/make -f
+
+PACKAGE = openni-module-primesense-nite2-nonfree
+
+COMPILED_BASE = $(CURDIR)/../NiTE-2.0.0
+NITE_BASE = $(CURDIR)/debian/$(PACKAGE)
+
+prefix = /usr
+bindir = $(prefix)/bin
+libdir = $(prefix)/lib
+includedir = $(prefix)/include/nite2
+sharedir = $(prefix)/share
+docdir = $(sharedir)/doc
+jardir = $(sharedir)/java
+etcdir = /etc/nite2
+logdir = /var/log/primesense/XnSensorServer
+usbruledir = /etc/udev/rules.d
+
+%:
+	dh $@
+
+
+override_dh_auto_install:
+	install -d $(NITE_BASE)/$(libdir)
+	install -p -m0644 $(COMPILED_BASE)/Redist/libNiTE2.so\
+		$(NITE_BASE)/$(libdir)
+	install -p -m0644 $(COMPILED_BASE)/Redist/NiTE.ini\
+		$(NITE_BASE)/$(libdir)
+	install -d $(NITE_BASE)/$(etcdir)/NiTE2
+	install -p -m0644 $(COMPILED_BASE)/Redist/NiTE2/*.dat \
+		$(NITE_BASE)/$(etcdir)/NiTE2/
+	install -p -m0644 $(COMPILED_BASE)/Redist/NiTE2/*.ini \
+		$(NITE_BASE)/$(etcdir)/NiTE2/
+	install -d $(NITE_BASE)/$(etcdir)/NiTE2/Data
+	install -p -m0644 $(COMPILED_BASE)/Redist/NiTE2/Data/* \
+		$(NITE_BASE)/$(etcdir)/NiTE2/Data/
+	install -d $(NITE_BASE)/$(bindir)
+	install -p -m0644 $(COMPILED_BASE)/Samples/Bin/HandViewer \
+		$(NITE_BASE)/$(bindir)/
+	install -p -m0644 $(COMPILED_BASE)/Samples/Bin/SimpleHandTracker \
+		$(NITE_BASE)/$(bindir)/
+	install -p -m0644 $(COMPILED_BASE)/Samples/Bin/SimpleUserTracker \
+		$(NITE_BASE)/$(bindir)/
+	install -p -m0644 $(COMPILED_BASE)/Samples/Bin/UserViewer \
+		$(NITE_BASE)/$(bindir)/
+	install -d $(NITE_BASE)/$(includedir)
+	install -p -m0644 $(COMPILED_BASE)/Include/* \
+		$(NITE_BASE)/$(includedir)/
+
+#	if [ -f /usr/bin/gmcs ]; then \
+#		for net in $(MONO_DLLS); do \
+#			gacutil -i $(net) -package 2.0 \
+#			#netdll=$(shell basename $(net)) \
+#			#echo $(netdll) >> $(NITE_BASE)/$(etcdir)/XnVNITE.net.dll.list \
+#		done \
+#	fi

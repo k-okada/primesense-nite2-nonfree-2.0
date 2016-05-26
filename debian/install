@@ -1,0 +1,5 @@
+runnite2 usr/bin/
+update-primesense-nite2-nonfree usr/sbin/
+primesense-nite2-nonfree-make-deb usr/lib/primesense-nite2-nonfree
+nite2_debian_dir usr/share/primesense-nite2-nonfree
+debian/reportbug/script usr/share/bug/primesense-nite2-nonfree/

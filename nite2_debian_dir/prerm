@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "$1" = "configure" ]; then
+    echo # this is here to stop lintian shell-script-fails-syntax-check
+	#RMREGISTRATION#
+fi
+
+#DEBHELPER#

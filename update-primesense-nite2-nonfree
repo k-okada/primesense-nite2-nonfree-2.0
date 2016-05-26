@@ -1,0 +1,166 @@
+#!/bin/sh -x
+
+# Copyright (C) 2006-2008 Bart Martens <bartm@knars.be>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+LIB64=~/Downloads/NiTE-Linux-x64-2.0.0.tar.bz2
+LIB64_SHA256SUM=b1dcb9c9d7e82716ad2279e061afd16a742961946379b9cf2b93c6d83cf63b26 # sha of zipped LIB64
+
+downloadedfilename=primesense-nite2.tar.bz2.zip
+downloadedfile=/tmp/primesense-nite2.tar.bz2.zip
+cachedir=/var/cache/primesense-nite2-nonfree
+cachedfile=${cachedir}/$downloadedfilename
+
+set -e
+
+die_hard() {
+	echo "ERROR: $1"
+	echo "More information might be available at:"
+	echo "  http://wiki.debian.org/PrimeSenseNite"
+	exit 1
+}
+
+[ -e ${LIB64} ] || die_hard "put library file to $LIB64"
+#[ `whoami` = "root" ] || die_hard "must be root"
+
+show_usage() {
+	echo "Usage:"
+	echo "  `basename $0` --install"
+	echo "  `basename $0` --uninstall"
+	echo "Additional options:"
+	echo "  --verbose"
+	echo "  --quiet"
+	exit 1
+}
+
+basename=`basename $0`
+getopt_temp=`getopt -o iufvq --long install,uninstall,fast,verbose,quiet -n ${basename} -- "$@"` || show_usage
+eval set -- "$getopt_temp" || show_usage
+
+ACTION=none
+fast=no
+verbose=no
+quiet=no
+
+while [ true ]
+do
+	case "$1" in
+		-i|--install)
+			ACTION="--install"
+			shift
+			;;
+		-u|--uninstall)
+			ACTION="--uninstall"
+			shift
+			;;
+		-f|--fast)
+			fast=yes
+			shift
+			;;
+		-v|--verbose)
+			verbose=yes
+			shift
+			;;
+		-q|--quiet)
+			quiet=yes
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		*)
+			echo "Internal error!"
+			exit 1
+			;;
+	esac
+done
+
+[ "$ACTION" != "none" -a $# -eq 0 ] || show_usage
+[ "$quiet" != "yes" ] || verbose=no
+
+[ "$verbose" != "yes" ] || echo "options : $getopt_temp"
+
+UNPACKDIR=`mktemp -d /tmp/primesense-nite2-nonfree.XXXXXXXXXX` || die_hard "mktemp failed"
+echo "$UNPACKDIR" | grep -q "^/tmp/primesense-nite2-nonfree\." || die_hard "paranoia"
+cd "$UNPACKDIR" || die_hard "cd failed"
+
+[ "$verbose" != "yes" ] || echo "temporary directory: $UNPACKDIR"
+
+do_cleanup() {
+	[ "$verbose" != "yes" ] || echo "cleaning up temporary directory $UNPACKDIR ..."
+	cd /
+	echo "$UNPACKDIR" | grep -q "^/tmp/primesense-nite2-nonfree\." || die_hard "paranoia"
+	rm -rf "$UNPACKDIR"
+}
+
+die_hard_with_a_cleanup() {
+	do_cleanup
+	die_hard "$1"
+}
+
+case "$ACTION" in
+
+	--install)
+		[ "$verbose" != "yes" ] || echo "selected action = $ACTION"
+
+		if [ $(dpkg --print-architecture) = "amd64" ]; then
+		    downloadurl=${LIB64}
+		    checksum=${LIB64_SHA256SUM}
+                else
+                    die_hard "32 bit is not suported yet"
+                fi
+
+                [ "$verbose" != "yes" ] || echo "using $downloadfilename ..."
+                zip ${downloadedfile} ${downloadurl}
+
+		echo "Checking integrity of downloaded file using sha256sum ..."
+		checksum_file=${downloadedfile}.sha256
+		echo "$checksum  $downloadedfile" > ${checksum_file}
+		sha256sum -c ${checksum_file} || (echo checksum failed! try downloading again... ; exit 1)
+
+		cp ${downloadedfile} ${cachedfile}
+
+		[ "$verbose" != "yes" ] || echo "Creating .deb from $cachedfile ..."
+		/usr/lib/primesense-nite2-nonfree/primesense-nite2-nonfree-make-deb ${cachedfile}
+
+		[ "$verbose" != "yes" ] || echo "end of action $ACTION"
+		;;
+
+	--uninstall)
+		[ "$verbose" != "yes" ] || echo "selected action = $ACTION"
+		PKG="openni-modules-primesense-nite2-nonfree"
+		test dpkg -l ${PKG} 2> /dev/null > /dev/null && (
+			echo -n "You have ${PKG} installed, this action won't "
+			echo "uninstall anything you installed yourself."
+                        echo -n "Remove it manually if you don't want NITE anymore "
+                        echo "running as root:"
+                        echo
+                        echo "dpkg --purge ${PKG}"
+		)
+
+		[ "$verbose" != "yes" ] || echo "end of action $ACTION"
+		;;
+
+	*)
+		do_cleanup
+		show_usage
+		;;
+
+esac
+
+do_cleanup
+
+[ "$verbose" != "yes" ] || echo "end of update-primesense-nite2-nonfree"
+
