@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 LIB64=~/Downloads/NiTE-Linux-x64-2.0.0.tar.bz2
-LIB64_SHA256SUM=b1dcb9c9d7e82716ad2279e061afd16a742961946379b9cf2b93c6d83cf63b26 # sha of zipped LIB64
+LIB64_SHA256SUM=cfc0fefe69fd97b3f874175416cc64ff977710f52b9567421c8735652a038bbd # sha of zipped LIB64
 
 downloadedfilename=primesense-nite2.tar.bz2.zip
 downloadedfile=/tmp/primesense-nite2.tar.bz2.zip

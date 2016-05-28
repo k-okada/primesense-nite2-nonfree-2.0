@@ -1,3 +1,9 @@
+primesense-nite2-nonfree (2.0.0-2) unstable; urgency=low
+
+  * fixed sha256sum
+
+ -- Kei Okada <kei.okada@gmail.com>  Tue, 21 May 2013 13:22:39 -0400
+
 primesense-nite2-nonfree (0.2) unstable; urgency=low
 
   * First release (Closes: #628402)
